@@ -100,6 +100,14 @@ trait Cacheable
      */
     public function cached($model = null): void
     {
-        self::getCacheIndex()->set($model ?? $this, true);
+        $concrete = $model ?? $this;
+        $serialize = true;
+
+        if (method_exists($concrete, 'dataMap')) {
+            $serialize = false;
+            $concrete = (object) $concrete->dataMap();
+        }
+
+        self::getCacheIndex()->set($concrete, $serialize);
     }
 }

@@ -4,6 +4,7 @@ namespace Leve\Cacheable;
 
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Leve\Cacheable\Commands\FlushCommand;
+use Leve\Cacheable\Commands\InstallCommand;
 use Leve\Cacheable\Commands\ReIndexCommand;
 
 class ServiceProvider extends BaseServiceProvider
@@ -13,9 +14,6 @@ class ServiceProvider extends BaseServiceProvider
         $this->publishes([
             __DIR__ . '/../config/model_cached.php' => config_path('model_cached.php')
         ], 'config');
-
-
-        // $this->app->get('cacheable')->register();
     }
 
     /**
@@ -38,6 +36,7 @@ class ServiceProvider extends BaseServiceProvider
     public function registerCommands(): void
     {
         $this->commands([
+            InstallCommand::class,
             FlushCommand::class,
             ReIndexCommand::class
         ]);

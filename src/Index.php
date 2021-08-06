@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Leve\Cacheable\Concerns\TTL;
 use Leve\Cacheable\Concerns\Utils;
+use Leve\Cacheable\Models\Model;
+use Leve\Cacheable\Models\Group as GroupModel;
 
 class Index
 {
@@ -17,7 +19,7 @@ class Index
 
     private ?string $model;
 
-    private ?array $options = [];
+    private ?Collection $options;
 
     private Collection $groups;
 
@@ -30,8 +32,26 @@ class Index
     {
         $this->tag = $tag;
         $this->model = $model;
-        $this->options = $options;
+        $this->load();
+    }
+
+    /**
+     * Load data
+     *
+     * @return void
+     */
+    public function load()
+    {
+        $model = Model::where('tag', $this->tag)->first();
+
+        $this->options = collect($model->options);
         $this->groups = collect();
+
+        $groupTag = $this->getItemCacheName();
+
+        GroupModel::where('name', 'regexp', sprintf("/$groupTag.%s/i", '*'))
+            ->get()
+            ->each(fn($group) => $this->addGroup($group->key_name, $group->indexes));
     }
 
     /**
@@ -105,7 +125,11 @@ class Index
 
         $row = $this->cache()->get($key);
 
-        return $unserialize ? unserialize($row->value) : $row->value;
+        if (is_string($row->value)) {
+            return $unserialize ? unserialize($row->value) : $row->value;
+        }
+
+        return $row->value;
     }
 
     /**
@@ -198,6 +222,26 @@ class Index
     }
 
     /**
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getOption(string $key, mixed $default): mixed
+    {
+        return $this->options->get($key, $default);
+    }
+
+    /**
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getOptions(): Collection
+    {
+        return $this->options;
+    }
+
+    /**
      * Get index key
      *
      * @return string
@@ -213,7 +257,7 @@ class Index
      * @param $key
      * @return string
      */
-    public function getItemCacheName($key)
+    public function getItemCacheName(?string $key = '')
     {
         return $this->resolveCacheName($this->getTag(), $key);
     }

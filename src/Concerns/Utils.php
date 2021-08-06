@@ -16,7 +16,7 @@ trait Utils
     {
         try {
             $base_name = config('model_cached.cache_name');
-            $params = [$base_name, ...$args];
+            $params = array_filter([$base_name, ...$args]);
             $name = trim(str_repeat('%s.', count($params)), '.');
 
             return sprintf($name, ...$params);

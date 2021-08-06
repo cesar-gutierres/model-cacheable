@@ -3,14 +3,16 @@
 namespace Leve\Cacheable\Facades;
 
 use Illuminate\Support\Facades\Facade;
+use Leve\Cacheable\Strategy;
+use Leve\Cacheable\Index;
 
 /**
- * @static \Leve\Cacheable\Index add(string $class, array $options = [])
- * @static \Leve\Cacheable\Index index(string $class)
- * @static array getModels()
- * @static void register()
+ * @method static Strategy add(string $class, array $options = [])
+ * @method static Index index(string $class)
+ * @method static array getModels()
+ * @method static void register()
  */
-class Cacheable extends Facade 
+class Cacheable extends Facade
 {
     /**
      * @return mixed

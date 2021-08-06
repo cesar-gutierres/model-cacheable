@@ -3,7 +3,10 @@
 namespace Leve\Cacheable\Commands;
 
 use Illuminate\Console\Command;
+use Leve\Cacheable\Facades\Cacheable;
 use Leve\Cacheable\Index;
+use Leve\Cacheable\Models\Group;
+use Leve\Cacheable\Models\Model;
 
 class FlushCommand extends Command
 {
@@ -12,7 +15,7 @@ class FlushCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'cacheable:flush';
+    protected $signature = 'cacheable:flush {--drop-groups : remover grupos} {--drop-models : remover models}';
 
     /**
      * The console command description.
@@ -36,13 +39,22 @@ class FlushCommand extends Command
      */
     public function handle()
     {
+        $models = Cacheable::getModels();
+
+        $bar = $this->output->createProgressBar(count($models));
+
         /**
          * @var string $class
          * @var  Index $index
          */
-        foreach (app('cacheable')->getModels() as $class => $index) {
-            // dd($class);
+        foreach ($models as $class => $index) {
             $index->flush();
+
+            $bar->advance();
         }
+
+        $this->option('drop-groups') && Group::query()->delete();
+
+        $this->option('drop-models') && Model::query()->delete();
     }
 }

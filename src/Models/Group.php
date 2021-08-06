@@ -35,6 +35,16 @@ class Group extends Model
     protected $dates = ['created_at', 'updated_at', 'expires_in'];
 
     /**
+     * @return string
+     */
+    public function getKeyNameAttribute(): string
+    {
+        $values = explode('.', $this->name);
+
+        return end($values);
+    }
+
+    /**
      * @param array $data
      * @return void
      */
