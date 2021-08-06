@@ -1,0 +1,35 @@
+{
+    "name": "leveinvestimentos/model-cacheable",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Cesar Augusto",
+            "email": "cesinhagutierres@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^8.0",
+        "illuminate/support": "^8.0",
+        "illuminate/console": "^8.0",
+        "jenssegers/mongodb": "^3.8"
+    },
+    "config": {
+        "optimize-autoloader": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Leve\\Cacheable\\": "src/"
+        },
+        "files": [
+            "helper.php"
+        ]
+    },
+    "extra": {
+        "laravel": {
+           "providers": [
+               "Leve\\Cacheable\\ServiceProvider"
+           ]
+        }
+    }
+}
