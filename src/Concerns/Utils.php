@@ -58,6 +58,11 @@ trait Utils
             public function add(string $key, $index)
             {
                 $item = Item::where('index', $key)->first();
+                
+                if (!$item) {
+                    return $this->put($key, [$index], true);
+                }
+
                 $item->setConnection('mongodb');
                 $item->value = array_values(array_unique([...$item->value ?? [], $index]));
                 $item->save();
